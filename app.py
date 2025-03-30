@@ -37,6 +37,64 @@ def app():
         if st.sidebar.button("🔙 Back to Lobby"):
             navigate("lobby")
 
+
+def app():
+    import streamlit as st
+
+    # -----------------------------
+    # Session State Initialization
+    # -----------------------------
+    if "page" not in st.session_state:
+        st.session_state.page = "intro"
+    if "logged_in" not in st.session_state:
+        st.session_state.logged_in = False
+    if "mode" not in st.session_state:
+        st.session_state.mode = None
+    if "role" not in st.session_state:
+        st.session_state.role = None
+    if "company_id" not in st.session_state:
+        st.session_state.company_id = None
+    if "funding_complete" not in st.session_state:
+        st.session_state.funding_complete = False
+
+    # -----------------------------
+    # Sidebar Debug + Navigation
+    # -----------------------------
+    with st.sidebar:
+        st.write("🧭 Page:", st.session_state.page)
+        st.write("🎮 Mode:", st.session_state.mode)
+        st.write("🎭 Role:", st.session_state.role)
+        st.write("🏢 Company ID:", st.session_state.company_id)
+        st.write("💰 Funding Done:", st.session_state.funding_complete)
+        if st.session_state.page != "intro":
+            if st.button("🔙 Back to Lobby"):
+                st.session_state.page = "lobby"
+                st.rerun()
+
+    # -----------------------------
+    # Navigation Helper
+    # -----------------------------
+    def navigate(page):
+        st.session_state.page = page
+        st.rerun()
+
+    # -----------------------------
+    # Import Modules
+    # -----------------------------
+    from views import streamlit_company_list as company_list
+    from views import streamlit_ceo_dashboard as ceo_dashboard
+    from views import streamlit_ceo_decisions as ceo_decisions
+    from views import streamlit_funding_round as funding_round
+    from views import streamlit_founder_dashboard as investor_view
+    from views import streamlit_generate_companies as company_generator
+    from views import streamlit_lobby as lobby
+    from views import streamlit_onboarding as onboarding
+    from components import stock_ticker_banner as news_banner
+    from views import staffing
+
+    # -----------------------------
+    # Flow Routing
+    # -----------------------------
     if st.session_state.page == "intro":
         st.title("💼 Startup Simulation")
         st.markdown("""
@@ -96,6 +154,11 @@ def app():
     else:
         st.error("Unknown page state. Resetting...")
         navigate("intro")
+<<<<<<< HEAD
 
     with st.expander("🛠 Debug Session State", expanded=False):
         st.json(dict(st.session_state))
+=======
+if st.checkbox("Show Debug Info"):
+        st.json(st.session_state)
+>>>>>>> 8545700 (🚀 First full build of Startup Sim Alpha)
