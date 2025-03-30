@@ -1,0 +1,16 @@
+[
+  {
+    "id": "startup-001",
+    "name": "NeuroNest",
+    "industry": "AI Healthcare",
+    "founder": "Alex Ray",
+    "funding_stage": "Seed"
+  },
+  {
+    "id": "startup-002",
+    "name": "OrbitalTrade",
+    "industry": "FinTech",
+    "founder": "Jordan Vale",
+    "funding_stage": "Series A"
+  }
+]
