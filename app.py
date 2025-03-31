@@ -14,9 +14,13 @@ from views import (
 from components import stock_ticker_banner as news_banner
 
 init_session_state()
+# Auto-redirect from "intro" to "lobby" to bypass manual login
+if st.session_state.page == "intro":
+    st.session_state.page = "lobby"
+    st.rerun()
 
 st.write("🔥 Top of app.py")
-st.write("🔍 Session State Before Init:", dict(st.session_state))
+st.write("🔍 Session State Main Lobby", dict(st.session_state))
 st.write("✅ After Init:", dict(st.session_state))
 
 def navigate(page):
@@ -33,9 +37,12 @@ def app():
     st.sidebar.write("🏢 Company ID:", st.session_state.company_id)
     st.sidebar.write("💰 Funding Done:", st.session_state.funding_complete)
 
-    if st.session_state.page != "intro":
-        if st.sidebar.button("🔙 Back to Lobby"):
-            navigate("lobby")
+    if st.session_state.page == "intro":
+    st.title("💼 Startup Simulation")
+    st.markdown("Welcome to the Startup Business Simulation.")
+    if st.button("Login / Start"):
+        st.session_state.logged_in = True
+        navigate("lobby")
 
 
 def app():
