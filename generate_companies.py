@@ -1,15 +1,15 @@
-# company_generator_ai.py — creates rich startup data via OpenAI
-
 import openai
 import streamlit as st
 import random
+import ast
+from typing import List, Dict
 
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 industries = [
     "AgTech", "EdTech", "HealthTech", "Clean Energy", "SaaS",
     "Consumer Goods", "eCommerce", "Biotech", "AI Tools", "Food Delivery",
-    "Logistics", "RetailTech", "Greentech", "Mobility", "Digital Wellness","Coffee Shop", "Local Restaurant",
+    "Logistics", "RetailTech", "Greentech", "Mobility", "Digital Wellness", "Coffee Shop", "Local Restaurant",
     "Fitness", "Real Estate", "TravelTech", "Fintech", "Manufacturing",
     "Construction", "Gaming", "Entertainment", "Telecom", "Cybersecurity",
     "Insurance", "LegalTech", "HRTech", "PropTech", "Blockchain",
@@ -42,10 +42,10 @@ industries = [
     "Circular Economy", "Green Manufacturing", "Eco-Design"
 ]
 
-def generate_startups(n=15):
+def generate_startups(n: int = 15) -> List[Dict]:
     prompt = f"""Create {n} fictional startup companies. For each, include:
 - name
-- industry (from: {', '.join(industries)})
+- industry (from: {', '.join(industries[:15])})
 - short description
 - estimated valuation (in USD)
 - morale score (0–100)
@@ -54,7 +54,6 @@ def generate_startups(n=15):
 
 Return as a Python list of dictionaries.
 """
-
     try:
         response = openai.ChatCompletion.create(
             model="gpt-4",
@@ -65,8 +64,28 @@ Return as a Python list of dictionaries.
             temperature=0.7,
             max_tokens=1500
         )
-
-        startup_list = eval(response.choices[0].message["content"])
+        startup_list = ast.literal_eval(response.choices[0].message["content"])
         return startup_list
     except Exception as e:
-        return [{"error": str(e)}]
+        return fallback_startups() + [{"error": str(e)}]
+
+def fallback_startups() -> List[Dict]:
+    return [{
+        "name": "Fallback Co.",
+        "industry": "EdTech",
+        "description": "A startup for testing only.",
+        "valuation": "$1,000,000",
+        "morale": 80,
+        "customers": 500,
+        "dependencies": ["Servers", "Content Creators", "Marketing"]
+    }]
+
+def display_startups(startups: List[Dict]):
+    st.subheader("🚀 Startup Opportunities")
+    for s in startups:
+        with st.expander(f"{s['name']} — {s['industry']}"):
+            st.write(s['description'])
+            st.metric("💰 Valuation", s['valuation'])
+            st.metric("📈 Morale", s['morale'])
+            st.metric("👥 Customers", s['customers'])
+            st.write("📦 Dependencies:", ', '.join(s['dependencies']))
