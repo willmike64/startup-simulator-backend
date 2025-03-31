@@ -154,11 +154,5 @@ def app():
     else:
         st.error("Unknown page state. Resetting...")
         navigate("intro")
-<<<<<<< HEAD
 
-    with st.expander("🛠 Debug Session State", expanded=False):
-        st.json(dict(st.session_state))
-=======
-if st.checkbox("Show Debug Info"):
-        st.json(st.session_state)
->>>>>>> 8545700 (🚀 First full build of Startup Sim Alpha)
+st.write("🔥 Your final cleaned version")
