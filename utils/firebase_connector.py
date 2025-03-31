@@ -4,8 +4,14 @@ import streamlit as st
 
 # Initialize Firebase only once
 if "firebase_initialized" not in st.session_state:
+    if "firebase" in st.secrets:
     firebase_config = st.secrets["firebase"]
     cred = credentials.Certificate(firebase_config)
+    firebase_admin.initialize_app(cred)
+    db = firestore.client()
+else:
+    db = None  # or handle accordingly
+    
     firebase_admin.initialize_app(cred)
     st.session_state["firebase_initialized"] = True
 
@@ -27,6 +33,8 @@ def log_session_data(data):
     """Log full session snapshot including results_df"""
     log_ref = db.collection("logs").document()
     log_ref.set(data)
+
+
 
 # Safe getter helper for reuse
 def ss(key, default=None):

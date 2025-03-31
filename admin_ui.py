@@ -1,13 +1,8 @@
 import streamlit as st
 import json
 import pandas as pd
-
 from datetime import datetime
 
-# ✅ MUST BE FIRST Streamlit command
-st.set_page_config(page_title="BizSim Alpha", layout="wide")
-
-# ✅ Now safe to continue with logic
 from utils.session import init_session_state
 from views import (
     company_list,
@@ -21,16 +16,10 @@ from views import (
     staffing
 )
 from components import stock_ticker_banner as news_banner
-from utils.firebase_connector import save_user_game, log_session_data  # Firebase functions
+from utils.firebase_connector import save_user_game, log_session_data
+import admin_ui
 
 init_session_state()
-from utils.firebase_connector import save_user_game, log_session_data  # Firebase functions
-
-init_session_state()
-
-# ⛑️ TEMP DEBUG: Check secrets structure
-st.write("SECRETS TYPE:", type(st.secrets.get("firebase")))
-st.json(st.secrets.get("firebase"))
 
 # Optional clean helper for session state access
 def ss(key, default=None):
@@ -45,7 +34,6 @@ def reset_session():
         del st.session_state[key]
     st.experimental_rerun()
 
-# Set up results DataFrame for logging simulation data
 def init_results_df():
     if "results_df" not in st.session_state:
         st.session_state["results_df"] = pd.DataFrame(columns=["timestamp", "company_id", "event", "value"])
@@ -63,7 +51,6 @@ def log_event(event_name, value):
         pd.DataFrame([new_row])
     ], ignore_index=True)
 
-# Firebase logging function
 if "log_data" not in st.session_state:
     st.session_state["log_data"] = []
 
@@ -92,10 +79,26 @@ with st.sidebar:
         log_current_session()
         st.success("✅ Session state and results logged to Firebase")
 
-    # View logged results
     if "results_df" in st.session_state and not st.session_state["results_df"].empty:
         with st.expander("📊 View Simulation Log"):
             st.dataframe(st.session_state["results_df"])
+
+    if st.button("⬇️ Download Session as JSON"):
+        game_json = json.dumps(dict(st.session_state), indent=2).encode("utf-8")
+        st.download_button("Download Game State", game_json, file_name="game_state.json")
+
+    # Toggle between Admin and Sim UI
+    st.markdown("---")
+    if st.toggle("👁 View Admin Panel", value=st.secrets.get("admin_mode") == "true"):
+        st.session_state["show_admin"] = True
+    else:
+        st.session_state["show_admin"] = False
+
+# 🚨 Admin toggle
+if st.session_state.get("show_admin"):
+    st.info("🧑‍💼 Admin mode active — displaying Admin UI")
+    admin_ui  # Executes admin interface
+    st.stop()
 
 # Intro Page
 if ss("page") == "intro":
