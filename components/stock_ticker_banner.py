@@ -1,8 +1,7 @@
 import streamlit as st
 
-def app():
-    def render_news():
-        import streamlit as st
-        st.info('📣 AI News: Market shifts expected due to new regulations...')
-if st.checkbox("Show Debug Info"):
-        st.json(st.session_state)
+def render_news():
+    st.info('📣 AI News: Market shifts expected due to new regulations.')
+
+    with st.expander("🛠 Debug Session State", expanded=False):
+        st.json(dict(st.session_state))
