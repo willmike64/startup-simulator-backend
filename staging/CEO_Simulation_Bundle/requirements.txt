@@ -1,0 +1,6 @@
+pandas
+matplotlib
+streamlit
+discord.py
+openai
+firebase-admin
