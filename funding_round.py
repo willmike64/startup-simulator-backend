@@ -57,9 +57,6 @@ st.session_state.counter_offer = {
         if st.button("✅ Accept Deal"):
             st.success("🎉 Deal Agreed!")
             st.rerun()
-with st.expander("🛠 Debug Session State", expanded=False):
+with st.expander("🛠 Debug Session State 1", expanded=False):
     st.json(st.session_state)
         st.json(st.session_state)
-
-with st.expander("🛠 Debug Session State"):
-    st.json(dict(st.session_state))

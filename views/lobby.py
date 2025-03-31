@@ -1,24 +1,37 @@
 import streamlit as st
 
-def app():
-    def render_lobby(navigate):
-        import streamlit as st
-        st.write("🎮 Welcome to the Simulation Lobby")
-        if st.button("Single-Player Mode"):
-            st.session_state.mode = "single"
-            navigate("lobby")
-        if st.button("Multiplayer Mode"):
-            st.session_state.mode = "multi"
-            navigate("multiplayer")
+def render_lobby(navigate):
+    st.title("🏢 Lobby")
 
-    def render_role_picker(navigate):
-        import streamlit as st
-        st.subheader("Choose Your Role")
-        if st.button("CEO"):
-            st.session_state.role = "CEO"
-            navigate("onboarding")
-        if st.button("Investor"):
-            st.session_state.role = "Investor"
-            navigate("single_player")
-if st.checkbox("Show Debug Info"):
-        st.json(st.session_state)
+    if not st.session_state.get("is_logged_in"):
+        st.header("🔐 Login")
+        username = st.text_input("Enter your username")
+        if st.button("Login"):
+            if username:
+                st.session_state.username = username
+                st.session_state.user_id = username.lower().replace(" ", "_")
+                st.session_state.is_logged_in = True
+                st.session_state.page = "role_picker"
+                st.rerun()
+            else:
+                st.warning("Please enter a username to log in.")
+        return
+
+    st.success(f"✅ Logged in as: {st.session_state.username}")
+
+    if st.session_state.page == "role_picker":
+        render_role_picker(navigate)
+    else:
+        st.write("🔁 Redirecting...")
+        navigate("intro")
+
+def render_role_picker(navigate):
+    st.header("🎭 Choose Your Role")
+    role = st.radio("Who are you today?", ["CEO", "Founder", "Investor"], key="role_choice")
+    if st.button("Continue with Role"):
+        st.session_state.role = role
+        st.session_state.page = "onboarding"
+        navigate("onboarding")
+
+    with st.expander("🛠 Debug Session State", expanded=False):
+        st.json(dict(st.session_state))
