@@ -1,2 +1,8 @@
 streamlit
 openai
+discord
+pandas
+firebase-admin
+numpy
+requests
+results
