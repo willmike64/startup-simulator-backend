@@ -1,9 +1,6 @@
 from utils.session import init_session_state
 init_session_state()
 
-from utils.session import init_session_state
-init_session_state()
-
 import streamlit as st
 
 def app():
