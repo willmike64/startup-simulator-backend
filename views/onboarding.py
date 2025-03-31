@@ -1,1 +1,1 @@
-# Placeholder for onboarding UI
+# Stub for onboarding UI

@@ -1,1 +1,1 @@
-# Placeholder for company generator
+# Stub for company generator

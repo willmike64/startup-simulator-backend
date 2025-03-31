@@ -1,1 +1,1 @@
-# Placeholder for news banner
+# Stub for stock ticker news banner

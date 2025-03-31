@@ -1,1 +1,1 @@
-# Placeholder for lobby UI
+# Stub for lobby UI

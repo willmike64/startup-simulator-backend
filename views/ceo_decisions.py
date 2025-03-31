@@ -1,1 +1,1 @@
-# Placeholder for CEO decisions UI
+# Stub for CEO decisions UI

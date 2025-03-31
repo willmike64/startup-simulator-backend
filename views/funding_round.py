@@ -1,1 +1,1 @@
-# Placeholder for funding UI
+# Stub for funding UI

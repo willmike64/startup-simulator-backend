@@ -1,1 +1,1 @@
-# Placeholder for investor view UI
+# Stub for investor view UI

@@ -1,1 +1,1 @@
-# Placeholder for CEO dashboard UI
+# Stub for CEO dashboard UI
