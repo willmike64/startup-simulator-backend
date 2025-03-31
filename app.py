@@ -1,4 +1,9 @@
 import streamlit as st
+
+# ✅ MUST BE FIRST Streamlit command
+st.set_page_config(page_title="BizSim Alpha", layout="wide")
+
+# ✅ Now safe to continue with logic
 from utils.session import init_session_state
 from views import (
     company_list,
@@ -12,20 +17,15 @@ from views import (
     staffing
 )
 from components import stock_ticker_banner as news_banner
+# from utils.firebase_connector import save_user_game  # Optional
 
-# ✅ Safely commented out firebase (no module crash)
-# from utils.firebase_connector import save_user_game
-
-# ✅ MUST BE FIRST
-st.set_page_config(page_title="BizSim Alpha", layout="wide")
-
-# Initialize session
 init_session_state()
 
 def navigate(page):
     st.session_state.page = page
     st.rerun()
 
+# Sidebar
 with st.sidebar:
     st.title("🚀 BizSim")
     st.write("🧭 Page:", st.session_state.page)
@@ -37,6 +37,7 @@ with st.sidebar:
         if st.button("🔙 Back to Lobby"):
             navigate("lobby")
 
+# Intro Page
 if st.session_state.page == "intro":
     st.title("🚀 Welcome to BizSim")
     st.markdown("#### Build. Negotiate. Win. Choose your path as a startup CEO or investor.")
@@ -52,6 +53,7 @@ if st.session_state.page == "intro":
     with st.expander("🛠 Debug Session State", expanded=False):
         st.json(dict(st.session_state))
 
+# Page Routing
 elif st.session_state.page == "lobby":
     if st.session_state.mode == "single" and not st.session_state.role:
         lobby.render_role_picker(navigate)
