@@ -3,6 +3,7 @@ from advisors.ai_banker import get_banker_advice
 
 def render_decision_ui():
     st.subheader("💼 CEO Decisions")
+    st.write("Interact with your board, AI banker, or external advisors.")
 
     company_data = {
         "name": "Neuronest",
