@@ -1,4 +1,7 @@
 import streamlit as st
+import json
+import pandas as pd
+from datetime import datetime
 
 # ✅ MUST BE FIRST Streamlit command
 st.set_page_config(page_title="BizSim Alpha", layout="wide")
@@ -17,82 +20,133 @@ from views import (
     staffing
 )
 from components import stock_ticker_banner as news_banner
-# from utils.firebase_connector import save_user_game  # Optional if not ready
+from utils.firebase_connector import save_user_game, log_session_data  # Firebase functions
 
 init_session_state()
 
+# Optional clean helper for session state access
+def ss(key, default=None):
+    return st.session_state[key] if key in st.session_state else default
+
 def navigate(page):
-    st.session_state.page = page
+    st.session_state["page"] = page
     st.rerun()
+
+def reset_session():
+    for key in list(st.session_state.keys()):
+        del st.session_state[key]
+    st.experimental_rerun()
+
+# Set up results DataFrame for logging simulation data
+def init_results_df():
+    if "results_df" not in st.session_state:
+        st.session_state["results_df"] = pd.DataFrame(columns=["timestamp", "company_id", "event", "value"])
+
+def log_event(event_name, value):
+    init_results_df()
+    new_row = {
+        "timestamp": datetime.now().isoformat(),
+        "company_id": ss("company_id", "unknown"),
+        "event": event_name,
+        "value": value
+    }
+    st.session_state["results_df"] = pd.concat([
+        st.session_state["results_df"],
+        pd.DataFrame([new_row])
+    ], ignore_index=True)
+
+# Firebase logging function
+if "log_data" not in st.session_state:
+    st.session_state["log_data"] = []
+
+def log_current_session():
+    current_state = dict(st.session_state)
+    st.session_state["log_data"].append(current_state)
+    log_session_data({
+        "state": current_state,
+        "results": st.session_state["results_df"].to_dict(orient="records")
+    })
 
 # Sidebar
 with st.sidebar:
     st.title("🚀 BizSim")
-    st.write("🧭 Page:", st.session_state.get("page", "intro"))
-    st.write("🎮 Mode:", st.session_state.get("mode", "single"))
-    st.write("🎭 Role:", st.session_state.get("role", "unknown"))
-    st.write("🏢 Company ID:", st.session_state.get("company_id", "❓ Not set"))
-    st.write("💰 Funding Done:", st.session_state.get("funding_complete", False))
-    if st.session_state.get("page") != "intro":
+    st.write("🧭 Page:", ss("page", "intro"))
+    st.write("🎮 Mode:", ss("mode", "single"))
+    st.write("🎭 Role:", ss("role", "unknown"))
+    st.write("🏢 Company ID:", ss("company_id", "❓ Not set"))
+    st.write("💰 Funding Done:", ss("funding_complete", False))
+    if ss("page") != "intro":
         if st.button("🔙 Back to Lobby"):
             navigate("lobby")
+    if st.button("♻️ Reset Session"):
+        reset_session()
+    if st.button("📝 Log Session Snapshot"):
+        log_current_session()
+        st.success("✅ Session state and results logged to Firebase")
+
+    # View logged results
+    if "results_df" in st.session_state and not st.session_state["results_df"].empty:
+        with st.expander("📊 View Simulation Log"):
+            st.dataframe(st.session_state["results_df"])
 
 # Intro Page
-if st.session_state.get("page") == "intro":
+if ss("page") == "intro":
     st.title("🚀 Welcome to BizSim")
     st.markdown("#### Build. Negotiate. Win. Choose your path as a startup CEO or investor.")
 
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("🎮 Start Simulation"):
+        if st.button("🎮 Launch Simulation"):
             navigate("lobby")
     with col2:
         if st.button("💾 Save Game"):
-            st.info("✅ Game saved (firebase temporarily disabled)")
+            save_user_game()
+            log_current_session()
+            st.success("✅ Game saved and session logged to Firebase")
 
     with st.expander("🛠 Debug Session State", expanded=False):
         st.json(dict(st.session_state))
 
 # Routing
-elif st.session_state.get("page") == "lobby":
-    if st.session_state.get("mode") == "single" and not st.session_state.get("role"):
+elif ss("page") == "lobby":
+    if ss("mode") == "single" and not ss("role"):
         lobby.render_role_picker(navigate)
-    elif st.session_state.get("mode") == "single" and st.session_state.get("role"):
+    elif ss("mode") == "single" and ss("role"):
         navigate("onboarding")
     else:
         lobby.render_lobby(navigate)
 
-elif st.session_state.get("page") == "onboarding":
+elif ss("page") == "onboarding":
     onboarding.render_onboarding(navigate)
 
-elif st.session_state.get("page") == "funding_round":
+elif ss("page") == "funding_round":
     funding_round.render_funding_ui(navigate)
 
-elif st.session_state.get("page") == "single_player":
-    if not st.session_state.get("funding_complete"):
+elif ss("page") == "single_player":
+    if not ss("funding_complete"):
         navigate("funding_round")
-    elif st.session_state.get("role") == "CEO":
+    elif ss("role") == "CEO":
         company_list.show_company_selection()
         ceo_dashboard.render_ceo_ui()
         ceo_decisions.render_decision_ui()
         staffing.render_staffing_ui()
         news_banner.render_news()
-    elif st.session_state.get("role") == "Investor":
+    elif ss("role") == "Investor":
         investor_view.render_investor_ui()
         news_banner.render_news()
     else:
         st.warning("Unknown role selected. Returning to lobby.")
         navigate("lobby")
 
-elif st.session_state.get("page") == "multiplayer":
-    if st.session_state.get("role") == "CEO":
+elif ss("page") == "multiplayer":
+    if ss("role") == "CEO":
         company_list.show_company_selection()
         ceo_dashboard.render_ceo_ui()
         funding_round.render_funding_ui(navigate)
         ceo_decisions.render_decision_ui()
         staffing.render_staffing_ui()
         news_banner.render_news()
-    elif st.session_state.get("role") == "Investor":
+    elif ss("role") == "Investor":
         investor_view.render_investor_ui()
         news_banner.render_news()
     else:
