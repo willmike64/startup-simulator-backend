@@ -1,8 +1,8 @@
 import streamlit as st
 
-def app():
-    def render_staffing_ui():
-        import streamlit as st
-        st.write('👥 Staffing & Department Review')
-if st.checkbox("Show Debug Info"):
-        st.json(st.session_state)
+def render_staffing_ui():
+    st.header("👥 Team Builder")
+    st.write("Manage teams, departments, and open roles.")
+
+    with st.expander("🛠 Debug Session State", expanded=False):
+        st.json(dict(st.session_state))

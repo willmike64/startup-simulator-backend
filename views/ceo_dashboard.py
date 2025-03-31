@@ -1,8 +1,8 @@
 import streamlit as st
 
-def app():
-    def render_ceo_ui():
-        import streamlit as st
-        st.write('💼 CEO Dashboard (Post-Acquisition)')
-if st.checkbox("Show Debug Info"):
-        st.json(st.session_state)
+def render_ceo_ui():
+    st.title("🧠 CEO Dashboard")
+    st.write("Key metrics, goals, and AI interactions.")
+
+    with st.expander("🛠 Debug Session State", expanded=False):
+        st.json(dict(st.session_state))

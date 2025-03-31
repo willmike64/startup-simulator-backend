@@ -3,19 +3,17 @@ from advisors.ai_banker import get_banker_advice
 
 def render_decision_ui():
     st.subheader("💼 CEO Decisions")
-    st.write("Strategic pivots, investments, AI advisors")
 
     company_data = {
-        "name": "NeuroNest",
-        "valuation": "$2M",
-        "funding_stage": "Seed",
-        "industry": "HealthTech"
+        "name": "Neuronest",
+        "valuation": "$5M",
+        "funding_stage": "Seed"
     }
 
-    if st.button("💬 Ask AI Banker for Advice"):
-        response = get_banker_advice(company_data)
+    if st.button("💬 Ask AI Banker"):
+        result = get_banker_advice(company_data)
         st.success("🧠 AI Banker Responded:")
-        st.write(response)
+        st.write(result)
 
     with st.expander("🛠 Debug Session State", expanded=False):
         st.json(dict(st.session_state))
