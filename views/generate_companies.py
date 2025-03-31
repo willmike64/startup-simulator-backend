@@ -1,8 +1,8 @@
 import streamlit as st
 
-def app():
-    def generate_ui():
-        import streamlit as st
-        st.write('🏗️ Startup Generator')
-if st.checkbox("Show Debug Info"):
-        st.json(st.session_state)
+def render_company_generator():
+    st.title("🏗️ Startup Generator")
+    st.write("Generate AI-powered startup concepts.")
+
+    with st.expander("🛠 Debug Session State", expanded=False):
+        st.json(dict(st.session_state))
